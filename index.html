@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Report Cover Page Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Exact layout visual match for preview */
+        .pdf-border {
+            border: 2px solid #501d32;
+            padding: 4px;
+        }
+        .pdf-inner-border {
+            border: 1px solid #501d32;
+            height: 100%;
+            width: 100%;
+        }
+        .maroon-text { color: #501d32; }
+        .maroon-border { border-color: #501d32; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 to-purple-100 min-h-screen py-10 px-4">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        
+        <!-- LEFT: INPUT FORM -->
+        <div class="lg:col-span-5 p-6 border-b lg:border-b-0 lg:border-r border-gray-100 bg-slate-50/50">
+            <h2 class="text-xl font-bold text-indigo-900 mb-5 flex items-center gap-2">
+                📝 Enter Details
+            </h2>
+            
+            <div class="space-y-4">
+                <!-- Logo File Upload -->
+                <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-indigo-800 mb-1">Upload University Logo</label>
+                    <input type="file" id="logoInput" accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 file:cursor-pointer">
+                    <p class="text-[10px] text-gray-400 mt-1">Recommended: Keep under 2.5MB for fast performance</p>
+                </div>
+
+                <!-- Fields -->
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600">Institution/University Name</label>
+                        <input type="text" id="uniName" placeholder="University Of Scholars" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600">Lab Report No</label>
+                        <input type="text" id="labNo" placeholder="Lab Report No : 01" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600">Course Title</label>
+                        <input type="text" id="courseTitle" placeholder="Engineering Drawing" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600">Course Code</label>
+                        <input type="text" id="courseCode" placeholder="CSE 2144-0611" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                </div>
+
+                <!-- Submitted By -->
+                <div class="bg-emerald-50/30 p-3 rounded-lg border border-emerald-100 space-y-2">
+                    <h3 class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Submitted By:</h3>
+                    <input type="text" id="studentName" placeholder="Saif Ali Khan" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="studentId" placeholder="242010085" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                        <input type="text" id="section" placeholder="A" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="batch" placeholder="16" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                        <input type="text" id="program" placeholder="B.Sc. in CSE" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                </div>
+
+                <!-- Submitted To -->
+                <div class="bg-blue-50/30 p-3 rounded-lg border border-blue-100 space-y-2">
+                    <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wider">Submitted To:</h3>
+                    <input type="text" id="teacherName" placeholder="Tuhin Hossain" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="designation" placeholder="Lecturer" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                        <input type="text" id="department" placeholder="CSE" class="w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600">Date of Submission</label>
+                    <input type="text" id="subDate" placeholder="March 30, 2026" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-white">
+                </div>
+
+                <button id="generateBtn" class="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg cursor-pointer">
+                    🚀 Generate & Download PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- RIGHT: LIVE PREVIEW -->
+        <div class="lg:col-span-7 p-6 bg-gray-100 flex flex-col items-center justify-start min-h-[600px]">
+            <h2 class="text-sm font-bold text-gray-500 mb-3 self-start uppercase tracking-widest">👁️ Live Cover Page Preview</h2>
+            
+            <div id="previewDoc" class="w-full max-w-[430px] aspect-[1/1.414] bg-white shadow-2xl p-3 flex flex-col justify-between text-black font-sans pdf-border">
+                <div class="pdf-inner-border p-5 flex flex-col justify-between text-center">
+                    
+                    <!-- Header -->
+                    <div class="flex flex-col items-center mt-4">
+                        <h1 id="p-uniName" class="text-base font-black tracking-wide text-gray-900 uppercase min-h-[24px]">University Of Scholars</h1>
+                        
+                        <!-- Image Wrapper Box -->
+                        <div class="w-16 h-16 my-4 flex items-center justify-center overflow-hidden">
+                            <img id="logoPreview" class="w-full h-full object-contain hidden" alt="Logo">
+                            <span id="logoPlaceholder" class="text-[10px] text-gray-400 p-2 border border-dashed border-gray-300 rounded-md">No Logo</span>
+                        </div>
+                        
+                        <!-- Premium Styled LAB REPORT Label -->
+                        <div class="border-2 maroon-border rounded-md px-8 py-1 inline-block my-2">
+                            <h2 class="text-xs font-black tracking-[0.25em] maroon-text uppercase">LAB REPORT</h2>
+                        </div>
+                    </div>
+
+                    <!-- Course Info Meta Block -->
+                    <div class="text-left space-y-2 my-2 px-6 text-xs">
+                        <p class="font-medium"><span class="font-bold">Lab Report No :</span> <span id="p-labNo">01</span></p>
+                        <p class="font-medium"><span class="font-bold">Course Title :</span> <span id="p-courseTitle">Engineering Drawing</span></p>
+                        <p class="font-medium"><span class="font-bold">Course Code :</span> <span id="p-courseCode">CSE 2144-0611</span></p>
+                    </div>
+
+                    <!-- Split Grid Container for Info Boxes -->
+                    <div class="grid grid-cols-2 gap-3 px-2 text-[10px] text-left items-stretch my-2">
+                        <!-- Submitted By Box -->
+                        <div class="border maroon-border rounded-xl p-3 space-y-1.5 flex flex-col justify-start">
+                            <p class="font-black maroon-text uppercase border-b border-gray-200 pb-1 mb-1 text-center tracking-wider text-[9px]">Submitted By:</p>
+                            <p class="truncate"><span class="font-bold">Name:</span> <span id="p-studentName">Saif Ali Khan</span></p>
+                            <p><span class="font-bold">Student ID:</span> <span id="p-studentId">242010085</span></p>
+                            <p><span class="font-bold">Section:</span> <span id="p-section">A</span></p>
+                            <p><span class="font-bold">Batch:</span> <span id="p-batch">16</span></p>
+                            <p class="truncate"><span class="font-bold">Program:</span> <span id="p-program">B.Sc. in CSE</span></p>
+                        </div>
+
+                        <!-- Submitted To Box -->
+                        <div class="border maroon-border rounded-xl p-3 space-y-1.5 flex flex-col justify-start">
+                            <p class="font-black maroon-text uppercase border-b border-gray-200 pb-1 mb-1 text-center tracking-wider text-[9px]">Submitted To:</p>
+                            <p class="truncate"><span class="font-bold">Name:</span> <span id="p-teacherName">Tuhin Hossain</span></p>
+                            <p><span class="font-bold">Designation:</span> <span id="p-designation">Lecturer</span></p>
+                            <p><span class="font-bold">Department:</span> <span id="p-department">CSE</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Footer Layout Element Block -->
+                    <div class="mb-4 pt-3 flex justify-between items-end text-left text-[10px] px-2">
+                        <div>
+                            <p class="font-bold text-gray-900"><span class="font-black">Date of Submission:</span> <span id="p-subDate">March 30, 2026</span></p>
+                        </div>
+                        <div class="text-center w-28">
+                            <div class="w-full h-[1px] bg-gray-600 mb-1"></div>
+                            <p class="text-[8px] text-gray-700 font-bold uppercase tracking-wider">Teacher's Signature</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        const inputs = ['uniName', 'labNo', 'courseTitle', 'courseCode', 'studentName', 'studentId', 'section', 'batch', 'program', 'teacherName', 'designation', 'department', 'subDate'];
+        const logoInput = document.getElementById('logoInput');
+        const logoPreview = document.getElementById('logoPreview');
+        const logoPlaceholder = document.getElementById('logoPlaceholder');
+        let savedLogoBase64 = "";
+
+        // Fixed exact information parameters requested by user profile setup
+        const placeholders = {
+            uniName: "University Of Scholars", labNo: "01",
+            courseTitle: "Engineering Drawing", courseCode: "CSE 2144-0611",
+            studentName: "Saif Ali Khan", studentId: "242010085", section: "A", batch: "16", program: "B.Sc. in CSE",
+            teacherName: "Ahsan Arif", designation: "Lecturer", department: "CSE", subDate: "March 30, 2026"
+        };
+
+        // DOM Setup Initialization pipeline
+        window.addEventListener('DOMContentLoaded', () => {
+            const localLogo = localStorage.getItem('saved_uni_logo');
+            if (localLogo) {
+                savedLogoBase64 = localLogo;
+                logoPreview.src = localLogo;
+                logoPreview.classList.remove('hidden');
+                logoPlaceholder.classList.add('hidden');
+            }
+            
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    const val = e.target.value.trim();
+                    document.getElementById(`p-${id}`).innerText = val || placeholders[id];
+                });
+            });
+        });
+
+        // Safe Base64 parser loop block matching sandbox architecture
+        logoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2.5 * 1024 * 1024) { 
+                    alert("This image is too large! Please upload a logo under 2.5 MB to ensure smooth device execution.");
+                    logoInput.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    savedLogoBase64 = event.target.result;
+                    logoPreview.src = savedLogoBase64;
+                    logoPreview.classList.remove('hidden');
+                    logoPlaceholder.classList.add('hidden');
+                    try {
+                        localStorage.setItem('saved_uni_logo', savedLogoBase64);
+                    } catch(e) {
+                        console.log("Storage boundary hit, skipping client state sync.");
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Exact match PDF Generation Task Architecture Module
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+
+            const data = {};
+            inputs.forEach(id => { 
+                data[id] = document.getElementById(id).value.trim() || placeholders[id]; 
+            });
+
+            // Theme configuration color matrix
+            const maroonR = 80, maroonG = 29, maroonB = 50;
+
+            // DRAW DOUBLE MAROON FRAME BORDERS
+            doc.setDrawColor(maroonR, maroonG, maroonB);
+            doc.setLineWidth(0.7);
+            doc.rect(10, 10, pageWidth - 20, pageHeight - 20); // Outer border
+            doc.setLineWidth(0.3);
+            doc.rect(11.5, 11.5, pageWidth - 23, pageHeight - 23); // Inner parallel border
+
+            doc.setTextColor(0, 0, 0);
+
+            // 1. Institution Title Name text distribution processing
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(18);
+            doc.text(data.uniName, pageWidth / 2, 28, { align: "center" });
+
+            // 2. Graphic Vector Object Pipeline processing block
+            let logoYOffset = 36;
+            if (savedLogoBase64) {
+                try {
+                    doc.addImage(savedLogoBase64, 'JPEG', (pageWidth / 2) - 12, logoYOffset, 24, 24);
+                } catch (e) {
+                    doc.rect((pageWidth / 2) - 12, logoYOffset, 24, 24);
+                }
+                logoYOffset += 33;
+            } else {
+                logoYOffset += 15; 
+            }
+
+            // 3. Document LAB REPORT Structural Border Frame Block Box
+            doc.setDrawColor(maroonR, maroonG, maroonB);
+            doc.setLineWidth(0.5);
+            
+            const labelText = "LAB REPORT";
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(11);
+            
+            // Adjust spacing for custom letter spacing simulation tracking array
+            const spacedLabelText = labelText.split("").join("  ");
+            const boxW = doc.getTextWidth(spacedLabelText) + 12;
+            const boxH = 8;
+            const boxX = (pageWidth / 2) - (boxW / 2);
+            
+            doc.roundedRect(boxX, logoYOffset - 5, boxW, boxH, 1, 1);
+            doc.setTextColor(maroonR, maroonG, maroonB);
+            doc.text(spacedLabelText, pageWidth / 2, logoYOffset, { align: "center" });
+
+            // 4. Central Information Details List Matrix block
+            let infoY = logoYOffset + 14;
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            
+            doc.setFont("Helvetica", "bold"); doc.text("Lab Report No : ", 25, infoY);
+            doc.setFont("Helvetica", "normal"); doc.text(data.labNo, 56, infoY);
+            
+            doc.setFont("Helvetica", "bold"); doc.text("Course Title : ", 25, infoY + 7);
+            doc.setFont("Helvetica", "normal"); doc.text(data.courseTitle, 53, infoY + 7);
+            
+            doc.setFont("Helvetica", "bold"); doc.text("Course Code : ", 25, infoY + 14);
+            doc.setFont("Helvetica", "normal"); doc.text(data.courseCode, 54, infoY + 14);
+
+            // 5. Symmetric Container Box Allocation Grid processing
+            const gridY = infoY + 26;
+            const cardW = 75;
+            const cardH = 48;
+            const leftCardX = 22;
+            const rightCardX = pageWidth - 22 - cardW;
+
+            doc.setDrawColor(maroonR, maroonG, maroonB);
+            doc.setLineWidth(0.3);
+            
+            // Render Structural rounded outer limits mapping boxes
+            doc.roundedRect(leftCardX, gridY, cardW, cardH, 3, 3);
+            doc.roundedRect(rightCardX, gridY, cardW, cardH, 3, 3);
+
+            // Column Header Label texts rendering lines
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(maroonR, maroonG, maroonB);
+            
+            doc.text("Submitted By:", leftCardX + (cardW / 2), gridY + 5, { align: "center" });
+            doc.setDrawColor(220, 220, 220);
+            doc.line(leftCardX + 6, gridY + 8, leftCardX + cardW - 6, gridY + 8);
+
+            doc.text("Submitted To:", rightCardX + (cardW / 2), gridY + 5, { align: "center" });
+            doc.line(rightCardX + 6, gridY + 8, rightCardX + cardW - 6, gridY + 8);
+
+            // Populate internal parameters grid data
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(9.5);
+            let innerTextY = gridY + 14;
+
+            // Left Side: Submitted By Data array list processing
+            doc.setFont("Helvetica", "bold"); doc.text("Name:", leftCardX + 5, innerTextY);
+            doc.setFont("Helvetica", "normal"); doc.text(data.studentName, leftCardX + 17, innerTextY);
+
+            doc.setFont("Helvetica", "bold"); doc.text("Student ID:", leftCardX + 5, innerTextY + 6);
+            doc.setFont("Helvetica", "normal"); doc.text(data.studentId, leftCardX + 25, innerTextY + 6);
+
+            doc.setFont("Helvetica", "bold"); doc.text("Section:", leftCardX + 5, innerTextY + 12);
+            doc.setFont("Helvetica", "normal"); doc.text(data.section, leftCardX + 20, innerTextY + 12);
+
+            doc.setFont("Helvetica", "bold"); doc.text("Batch:", leftCardX + 5, innerTextY + 18);
+            doc.setFont("Helvetica", "normal"); doc.text(data.batch, leftCardX + 17, innerTextY + 18);
+
+            doc.setFont("Helvetica", "bold"); doc.text("Program:", leftCardX + 5, innerTextY + 24);
+            doc.setFont("Helvetica", "normal"); doc.text(data.program, leftCardX + 21, innerTextY + 24);
+
+            // Right Side: Submitted To Data matrix allocation processing
+            doc.setFont("Helvetica", "bold"); doc.text("Name:", rightCardX + 5, innerTextY);
+            doc.setFont("Helvetica", "normal"); doc.text(data.teacherName, rightCardX + 17, innerTextY);
+
+            doc.setFont("Helvetica", "bold"); doc.text("Designation:", rightCardX + 5, innerTextY + 6);
+            doc.setFont("Helvetica", "normal"); doc.text(data.designation, rightCardX + 27, innerTextY + 6);
+
+            doc.setFont("Helvetica", "bold"); doc.text("Department:", rightCardX + 5, innerTextY + 12);
+            doc.setFont("Helvetica", "normal"); doc.text(data.department, rightCardX + 27, innerTextY + 12);
+
+            // 6. Footer Base Platform Layout Blocks
+            const footerY = gridY + cardH + 26;
+            
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(10);
+            doc.text("Date of Submission:", leftCardX, footerY);
+            doc.setFont("Helvetica", "normal");
+            doc.text(data.subDate, leftCardX + 34, footerY);
+
+            // Signature configuration vector pipeline rendering
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.4);
+            doc.line(rightCardX + 10, footerY - 1, rightCardX + cardW, footerY - 1);
+            
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.setTextColor(80, 80, 80);
+            doc.text("Teacher's Signature", rightCardX + 10 + (cardW - 10) / 2, footerY + 3.5, { align: "center" });
+
+            // File preservation deployment block runtime stream allocation
+            const cleanId = document.getElementById('studentId').value.trim() || placeholders.studentId;
+            const filename = `Saif_ED_Cover_Page.pdf`;
+            doc.save(filename);
+        });
+    </script>
+</body>
+</html>
